@@ -1,0 +1,61 @@
+:root{
+    --mainColor01: #b4008a
+}
+h3{
+    color:white;
+    padding-top: 4rem;
+    font-size: 3rem;
+    text-align: center;
+}
+form{
+    border: var(--mainColor01) 1px solid;
+    width: 50%;
+    margin: 2rem auto;
+    padding: 3rem 1rem;
+    border-radius: 5px;
+    box-shadow: 3px 3px 5px 5px black;
+    background-color:  #2a0d23;
+    filter: brightness(90%);
+}
+input{
+    display: block;
+    margin: 0.5rem auto;
+    width: 80%;
+    background: transparent;
+    border: none;
+    border-bottom: solid white 1px;
+    color: white;
+    outline: none;
+    font-size:1.2rem;
+    padding:0.5rem
+}
+.inForm{
+    width:auto;
+    margin:2rem 0 0 0;
+    padding-left:4rem
+}
+.inForm label{
+    color: white;
+}
+#stayLogged{
+    width: auto;
+    display: inline;
+}
+button{
+    display: block;
+    font-size: 1.2rem;
+    margin: 1rem 0;
+    padding: 0.5rem;
+    border-radius: 15px;
+    outline: none;
+    border: var(--mainColor01) solid 1px;
+    color:white;
+    background-color: var(--mainColor01);
+    transition: 400ms;
+}
+
+button:hover{
+    cursor: pointer;
+    background-color: white;
+    color:var(--mainColor01)
+}
