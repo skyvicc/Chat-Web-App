@@ -1,12 +1,7 @@
 :root{
     --mainColor01: #b4008a
 }
-h3{
-    color:white;
-    padding-top: 4rem;
-    font-size: 3rem;
-    text-align: center;
-}
+
 form{
     border: var(--mainColor01) 1px solid;
     width: 50%;
