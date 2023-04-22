@@ -1,0 +1,33 @@
+
+h2{
+    margin-top: 14rem;
+    text-align: center;
+    font-size:6rem;
+    color:rgb(255, 255, 255);
+    text-shadow: 3px 3px  5px black;
+}
+.buttons, .inputs{
+    margin: auto;
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+button{
+    font-size: 1.5rem;
+    margin: 1rem;
+    padding: 0.5rem;
+    border-radius: 15px;
+    outline: none;
+    border: #b4008a solid 1px;
+    color:white;
+    background-color: #b4008a;
+    transition: 400ms;
+}
+
+button:hover{
+    cursor: pointer;
+    background-color: white;
+    color: #b4008a
+}
