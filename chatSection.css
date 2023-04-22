@@ -1,0 +1,42 @@
+main{
+border: var(--mainColor01) 1px solid;
+width: 90%;
+height: calc();
+margin: 2rem auto;
+padding: 2rem;
+border-radius: 5px;
+box-shadow: 3px 3px 5px 5px black;
+background-color:  #2a0d23;
+filter: brightness(90%);
+text-align: left;
+}
+nav{
+    display: flex;
+    padding:1rem;
+    border-bottom: solid var(--mainColor01) 1px;
+    background-color: #591649;
+    justify-content: space-evenly;
+}
+
+h4{
+    display: inline;
+    color: white;
+    margin-right:30%;
+    margin-left: 0;
+    font-size: 1.5rem;
+}
+button{
+    border-radius: 5px;
+    font-size: 1.2rem;
+    padding:0.3rem;
+    background-color: var(--mainColor01);
+    color: white;
+    border-color: var(--mainColor01);
+    outline: none;
+    transition: 400ms;
+}
+button:hover{
+    cursor: pointer;
+    background-color: white;
+    color:var(--mainColor01)
+}

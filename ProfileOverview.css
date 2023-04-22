@@ -1,0 +1,47 @@
+:root{
+    --mainColor01: #b4008a
+}
+main{
+    border: var(--mainColor01) 1px solid;
+    width: 50%;
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 5px;
+    box-shadow: 3px 3px 5px 5px black;
+    background-color:  #2a0d23;
+    filter: brightness(90%);
+    text-align: left;
+    /* display: flex; */
+}
+h2{
+    color: rgb(199, 58, 82);
+    display: inline;
+}
+span{
+    display: block;
+    color: white;
+    font-size: 1.3rem;
+    margin:0.5rem auto
+}
+button{
+    border-radius: 5px;
+    font-size: 0.8rem;
+    padding:0.3rem;
+    background-color: var(--mainColor01);
+    color: white;
+    border-color: var(--mainColor01);
+    outline: none;
+    transition: 400ms;
+}
+button:hover{
+    cursor: pointer;
+    background-color: white;
+    color:var(--mainColor01)
+}
+button:nth-of-type(1){
+    margin-left: 2.95rem;
+}
+hr{
+    opacity: 0.4;
+    margin: 1rem auto
+}

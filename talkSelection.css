@@ -1,0 +1,13 @@
+
+
+main{
+    border: var(--mainColor01) 1px solid;
+    width: 50%;
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 5px;
+    box-shadow: 3px 3px 5px 5px black;
+    background-color:  #2a0d23;
+    filter: brightness(90%);
+    text-align: left;
+}
