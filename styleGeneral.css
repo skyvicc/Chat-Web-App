@@ -16,3 +16,9 @@ html *{
     height: 100vh;
     background-image: linear-gradient(160deg, #250018 0%, #060606 100%);
 }
+h3{
+    color:white;
+    padding-top: 4rem;
+    font-size: 3rem;
+    text-align: center;
+}
