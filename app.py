@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template, redirect, url_for, request, session 
 import sqlite3
 
 app = Flask(__name__, static_folder='static')
