@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styleGeneral.css">
-    <link rel="stylesheet" href="styling.css">
     <title>Small Talk</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styleGeneral.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styling.css') }}">
 </head>
 <body>
     <section class="genSec">
@@ -14,11 +15,23 @@
     <main>
         <h2>Small Talk</h2>
         <div class="buttons">
-            <button class="logInButton">Log In</button>
-            <button class="signUpButton">Sign Up</button>
+            <button type="button" class="logInButton">Log In</button>
+            <button type="button" class="signUpButton">Sign Up</button>
+
         </div>
     </main>
     </section>
 </body>
-<script src="welcomeBackEnd.js"></script>
+
+<script>
+const logInButton = document.querySelector('.logInButton')
+const signUpButton = document.querySelector('.signUpButton')
+
+logInButton.addEventListener('click', ()=>{
+    location.href="{{ url_for('login') }}"
+})
+signUpButton.addEventListener('click', ()=>{
+    location.href="{{ url_for('signup') }}"
+})
+</script>
 </html>
