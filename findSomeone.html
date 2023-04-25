@@ -15,11 +15,20 @@
         <h3>Find Someone to Talk</h3>
         <main>
             <input type="search" name="searching" id="searching" placeholder="Looking for...">
-            <button>Go</button>
-            <section>
-                
+            <button class="go">Go</button>
+            <section class="usersSections">
+                <div>
+                {% for username in usernames %}
+                <p class="onlineUsers">{{ username }} <span>...</span><button class="talkButton">Talk</button></p>
+                {% endfor %}
+            </div>
             </section>
         </main>
+        
+        <section class="profile">
+            <p class="user">{{user}}</p>
+            <button class="viewProfile">View Profile</button>
+        </section>
     </section>
 </body>
 </html>
