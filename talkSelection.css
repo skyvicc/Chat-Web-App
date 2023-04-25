@@ -1,6 +1,6 @@
 
 
-main{
+main, .profile{
     border: var(--mainColor01) 1px solid;
     width: 50%;
     margin: 2rem auto;
@@ -10,4 +10,81 @@ main{
     background-color:  #2a0d23;
     filter: brightness(90%);
     text-align: left;
+    height: 60vh;
+}
+.onlineUsers{
+    color: white;
+    /* border: red solid 1px; */
+    text-align: left;
+    font-size: 1.5rem;
+    color:cyan;
+    padding:0.25rem;
+    /* width: 50% */
+}
+.usersSections{
+    margin-top: 1rem;
+    border-radius: 5px;
+    padding:1rem;
+    border-top: gray solid 1px;
+    height: calc(60vh - 8vh);
+    overflow-y:scroll;
+    padding-top: 0.5rem;
+}
+.status{
+    display: inline;
+    text-align: right;
+    /* border: red solid 1px; */
+}
+span{
+    color: gray;
+    font-size: 1.2rem;
+    margin-right: -1rem;
+}
+#searching{
+    width: 94%;
+    font-size: 1.1rem;
+    border: none;
+    border-bottom: solid gray;
+    background: transparent;
+    color: white;
+    outline: none;
+}
+.go, .talkButton, .viewProfile{
+    font-size: 1.1rem;
+    background-color: var(--mainColor01);
+    border: solid var(--mainColor01) 1px;
+    padding:0.2rem;
+    color: white;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: 400ms;
+}
+.talkButton{
+    margin-left: 4rem;
+}
+button:hover{
+    cursor: pointer;
+    background-color: white;
+    color:var(--mainColor01)
+}
+/* ---------------------------------------------------- */
+.profile{
+    padding-top: 0.5rem;
+    padding-bottom: 2.5rem;
+    position: absolute;
+    width: 5vw;
+    height: 5vh;
+    top: 74.7%;
+    left: 3%
+}
+.user{
+    color: white;
+    text-align: center;
+    margin-bottom: 0.3rem;
+    border-bottom: solid white 1px;
+    font-size: 1.2rem;
+
+}
+.viewProfile{
+    font-size: 0.8rem;
 }
