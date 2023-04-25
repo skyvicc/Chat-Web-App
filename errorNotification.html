@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Occurance</title>
+    <!-- <link rel="stylesheet" href="styleGeneral.css"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styleGeneral.css') }}">
+    <style>
+        p{
+            font-size: 3rem;
+            color: white;
+            text-align: center;
+        }
+        main{
+            border: var(--mainColor01) 1px solid;
+            width: 50%;
+            margin: 2rem auto;
+            padding: 3rem 1rem;
+            border-radius: 5px;
+            box-shadow: 3px 3px 5px 5px black;
+            background-color:  #2a0d23;
+            filter: brightness(90%);
+        }
+    </style>
+</head>
+<body>
+    <section class="genSec">
+        <h3>Sorry...</h3>
+        <main>
+            <p>{{error}}</p>
+        </main>
+    </section>
+</body>
+</html>
