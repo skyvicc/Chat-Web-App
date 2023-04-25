@@ -1,7 +1,10 @@
-from flask import Flask, render_template, redirect, url_for, request, session 
-import sqlite3
+from flask import Flask, render_template, redirect, url_for, request, session
+import sqlite3, hashlib, os
+from datetime import timedelta
 
 app = Flask(__name__, static_folder='static')
+app.secret_key = os.urandom(16)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 
 @app.route('/')
 def index():
@@ -10,8 +13,7 @@ def index():
 @app.route('/login')
 def login():
     return render_template('logIn.html')
-
-@app.route('/signup') 
+@app.route('/signup')
 def signup():
     return render_template('signUp.html')
 #========================================================================
@@ -21,30 +23,31 @@ def process_login():
     username = request.form['username']
     password = request.form['pass']
     stay_logged = request.form.get('stayLogged')
-
-    # create a new database connection
     conn = sqlite3.connect('profiles.db')
     cursor = conn.cursor()
+    cursor.execute("SELECT password FROM users WHERE username = ?", (username,))
+    result = cursor.fetchone()
 
-    # check if the username and password match the records in the database
-    cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
-    user = cursor.fetchone()
-
-    if user is None:
+    if result is None:
         conn.close()
-        return 'Invalid username or password'
+        error = 'Invalid username or password'
+        return render_template('errorNotification.html', error = error)
     else:
-        # set a session variable to keep the user logged in
+        hashed_password = result[0]
+        hashed_input_password = hashlib.sha256(password.encode()).hexdigest()
 
-        # close the database connection
-        conn.close()
+        if hashed_input_password != hashed_password:
+            conn.close()
+            error = 'Invalid username or password'
+            return render_template('errorNotification.html', error = error)
+        else:
+            session['username'] = username
+            conn.close()
 
-        # redirect the user to the home page
-        return redirect(url_for('success'))
-
-
+            session['logged_in'] = True
+            session.modified =True
+            return redirect(url_for('success'))
 #------------------------------------------------------------------
-
 @app.route('/register', methods=['POST'])
 def process_signup():
     # code to process signup form data here
@@ -52,46 +55,36 @@ def process_signup():
     password = request.form['password']
     password_confirm = request.form['password_confirm']
     stay_logged = request.form.get('stayLogged')
-
-    # create a new database connection
     conn = sqlite3.connect('profiles.db')
     cursor = conn.cursor()
-
-    # check if the username already exists in the database
     cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
     if cursor.fetchone() is not None:
         conn.close()
-        return 'Username already exists'
+        error = 'Username already exists'
+        return render_template('errorNotification.html', error = error)
     elif password != password_confirm:
-        return 'The passes don\'t match'
+        error = 'The passwords don\'t match'
+        return render_template('errorNotification.html', error = error)
+
     else:
-        # insert the user data into the database
-        cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
         conn.commit()
-
-        # close the database connection
+        session['username'] = username
         conn.close()
-
-        # redirect the user to a success page
         return redirect(url_for('success'))
 
-@app.route('/find')
+@app.route(f'/find')
 def success():
-        # create a new database connection
+    if 'logged_in' not in session:
+        return redirect(url_for('login'))
     conn = sqlite3.connect('profiles.db')
     cursor = conn.cursor()
-
-    # execute a SELECT query to retrieve usernames from the database
     cursor.execute('SELECT username FROM users')
     usernames = [row[0] for row in cursor.fetchall()]
-
-    # close the database connection
     conn.close()
-
-    # render the findSomeone.html template with the usernames variable
-    return render_template('findSomeone.html', usernames=usernames)
-
+    user = session.get('username')
+    return render_template('findSomeone.html', usernames=usernames, user=user)
 
 if __name__ == '__main__':
-    app.run(debug=True)
-  
+    app.run()
