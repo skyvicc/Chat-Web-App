@@ -77,7 +77,6 @@ def process_signup():
     elif password != password_confirm:
         error = 'The passwords don\'t match'
         return render_template('errorNotification.html', error = error)
-
     else:
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
         cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
@@ -85,6 +84,8 @@ def process_signup():
         session['username'] = username
         conn.close()
         return redirect(url_for('success'))
+        
+        
 @app.route(f'/find')
 def success():
     if 'logged_in' not in session:
@@ -95,8 +96,8 @@ def success():
     usernames = [row[0] for row in cursor.fetchall()]
     conn.close()
     user = session.get('username')
+    del usernames[usernames.index(user)]
     return render_template('findSomeone.html', usernames=usernames, user=user)
 
 if __name__ == '__main__':
     app.run()
- 
