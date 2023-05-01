@@ -15,7 +15,7 @@
     <section class="genSec">
     <h3>Log In</h3>
     <main>
-        <form method="post" action="/login_step">
+        <form method="post" action="login_step">
             <input type="text" name="username" id="username" placeholder="Name"/>
             <input type="password" name="pass" id="pass" placeholder="Password">
             <section class="inForm">
@@ -24,6 +24,11 @@
                 <button type="submit" class="log">Log in</button>
             </section>
         </form>
+        {% if error %}
+        <ul>
+            <li>{{error}}</li>
+        </ul>
+    {% endif %}
     </main>
     </section>
 </body>
