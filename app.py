@@ -43,7 +43,7 @@ def process_login():
     if result is None:
         conn.close()
         error = 'Invalid username or password'
-        return render_template('errorNotification.html', error = error)
+        return render_template('logIn.html', error = error)
     else:
         hashed_password = result[0]
         hashed_input_password = hashlib.sha256(password.encode()).hexdigest()
@@ -51,7 +51,7 @@ def process_login():
         if hashed_input_password != hashed_password:
             conn.close()
             error = 'Invalid username or password'
-            return render_template('errorNotification.html', error = error)
+            return render_template('logIn.html', error = error)
         else:
             session['username'] = username
             conn.close()
@@ -73,10 +73,10 @@ def process_signup():
     if cursor.fetchone() is not None:
         conn.close()
         error = 'Username already exists'
-        return render_template('errorNotification.html', error = error)
+        return render_template('signUp.html', error = error)
     elif password != password_confirm:
         error = 'The passwords don\'t match'
-        return render_template('errorNotification.html', error = error)
+        return render_template('signUp.html', error = error)
     else:
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
         cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
