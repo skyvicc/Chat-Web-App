@@ -22,6 +22,11 @@
                 <button type="submit" class="sign">Sing Up</button>
             </section>
         </form>
+        {% if error %}
+        <ul>
+            <li>{{error}}</li>
+        </ul>
+    {% endif %}
     </main>
     </section>
 </body>
