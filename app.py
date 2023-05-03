@@ -86,7 +86,7 @@ def process_signup():
         return redirect(url_for('success'))
         
         
-@app.route(f'/find')
+@app.route(f'/find', methods=['GET'])
 def success():
     if 'logged_in' not in session:
         return redirect(url_for('login'))
@@ -97,7 +97,13 @@ def success():
     conn.close()
     user = session.get('username')
     del usernames[usernames.index(user)]
+    render_template('findSomeone.html', usernames=usernames, user=user)
     return render_template('findSomeone.html', usernames=usernames, user=user)
+@app.route(f'/find/chat', methods=['GET'])
+def chat():
+    if 'logged_in' not in session:
+        return redirect(url_for('login'))
+    return render_template('chatting.html')
 
 if __name__ == '__main__':
     app.run()
