@@ -18,9 +18,11 @@
             <button class="go">Go</button>
             <section class="usersSections">
                 <div>
-                {% for username in usernames %}
-                <p class="onlineUsers">{{ username }} <span>...</span><button class="talkButton">Talk</button></p>
-                {% endfor %}
+                <form method="get" action="{{url_for('chat')}}">
+                    {% for username in usernames %}
+                    <p class="onlineUsers">{{ username }} <span>...</span><button type="submit" class="talkButton">Talk</button></p>
+                    {% endfor %}
+                </form>
             </div>
             </section>
         </main>
