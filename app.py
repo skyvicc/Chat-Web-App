@@ -99,10 +99,17 @@ def success():
     del usernames[usernames.index(user)]
     render_template('findSomeone.html', usernames=usernames, user=user)
     return render_template('findSomeone.html', usernames=usernames, user=user)
+    
 @app.route(f'/find/chat', methods=['GET'])
 def chat():
     if 'logged_in' not in session:
         return redirect(url_for('login'))
+    rec = request.args.get('rec')
+    session['reciever'] = rec
+    print('-'*40)
+    print(session['reciever'], 'session')
+    print(rec)
+    print('-'*40)
     return render_template('chatting.html')
 
 if __name__ == '__main__':
