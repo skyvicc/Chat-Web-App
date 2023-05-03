@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>  
+    <script 
+        src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" 
+        integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" 
+        crossorigin="anonymous">
+    </script>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Find Someone to Talk</title>
-    <link rel="stylesheet" href="styleGeneral.css">
-    <link rel="stylesheet" href="talkSelection.css">
+    <!-- <link rel="stylesheet" href="styleGeneral.css"> -->
+    <!-- <link rel="stylesheet" href="talkSelection.css"> -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styleGeneral.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='talkSelection.css') }}">
 </head>
@@ -21,17 +26,40 @@
                 <form method="get" action="{{url_for('chat')}}">
                     {% for username in usernames %}
                     <p class="onlineUsers">{{ username }} <span>...</span>
-                    <button type="submit" class="talkButton" name="rec" value="{{username}}">Talk</button></p>
+                    <button type="submit" class="talkButton" name="rec" value="{{username}}" onClick="createRequest()">Talk</button></p>
                     {% endfor %}
                 </form>
             </div>
             </section>
         </main>
-        
+        <div class="request"></div>
         <section class="profile">
-            <p class="user">{{user}}</p>
+            <p class="user" data-value="{{user}}">{{user}}</p>
             <button class="viewProfile">View Profile</button>
         </section>
     </section>
+    <script>
+        let socketio = io()
+
+        const request = document.querySelector('.request')
+        const suer = document.querySelector('.user')
+
+        const suerValue = suer.dataset.value
+
+        const createRequest = function(){
+            const content = `
+            <div>
+                <p>${suerValue}</p>
+                <button>Yes</button>
+                <button>No</button>
+            </div>
+            `
+            request.innerHTML += content;
+            alert(suerValue)
+        }
+        socketio.on("request_step", (data)=>{
+            createRequest(auth.user)
+    })
+    </script>
 </body>
 </html>
