@@ -4,25 +4,22 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find Someone to Talk</title>
-    <link rel="stylesheet" href="styleGeneral.css">
-    <link rel="stylesheet" href="talkSelection.css">
+    <title>Chatting</title>
+    <!-- <link rel="stylesheet" href="styleGeneral.css"> -->
+    <!-- <link rel="stylesheet" href="chatSection.css"> -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styleGeneral.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='talkSelection.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='chatSection.css') }}">
 </head>
 <body>
     <section class="genSec">
-        <h3>Find Someone to Talk</h3>
+        <nav>
+            <h4>Chatting with {{username}}</h4>
+            <div class="messages" id="messages"></div>
+            <button class="newChatButton">End Chat</button>
+        </nav>
         <main>
-            <input type="search" name="searching" id="searching" placeholder="Looking for...">
-            <button class="go">Go</button>
-            <section class="usersSections">
-                <div>
-                {% for username in usernames %}
-                <p class="onlineUsers">{{ username }} <span>...</span><button class="talkButton">Talk</button></p>
-                {% endfor %}
-            </div>
-            </section>
+            <input type="text" placeholder="Type a message">
+            <button>Send</button>
         </main>
     </section>
 </body>
