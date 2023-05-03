@@ -24,7 +24,6 @@ conn.close()
 @app.route('/')
 def index():
     return render_template('index.html')
-
 @app.route('/login')
 def login():
     return render_template('logIn.html')
@@ -42,7 +41,6 @@ def process_login():
     cursor = conn.cursor()
     cursor.execute("SELECT password FROM users WHERE username = ?", (username,))
     result = cursor.fetchone()
-
     if result is None:
         conn.close()
         error = 'Invalid username or password'
@@ -57,8 +55,8 @@ def process_login():
             return render_template('logIn.html', error = error)
         else:
             session['username'] = username
+            session['domain'] = 'loby'
             conn.close()
-
             session['logged_in'] = True
             session.modified =True
             return redirect(url_for('success'))
@@ -93,6 +91,9 @@ def process_signup():
 def success():
     if 'logged_in' not in session:
         return redirect(url_for('login'))
+    domain = session.get('domain')
+    print(domain)
+    print('[SESSION]:', session['domain'])
     conn = sqlite3.connect('profiles.db')
     cursor = conn.cursor()
     cursor.execute('SELECT username FROM users')
@@ -117,10 +118,9 @@ def chat():
     return render_template('chatting.html', rec=rec, user=user)
 
 @socketio.on("request_step")
-def request_step(auth):
-    user = auth['user']
+def request_step():
     return 
-
+    print(f'{session.get("name")} said : {data["data"]}')
 
 
 
