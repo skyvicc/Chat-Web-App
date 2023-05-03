@@ -20,7 +20,8 @@
                 <div>
                 <form method="get" action="{{url_for('chat')}}">
                     {% for username in usernames %}
-                    <p class="onlineUsers">{{ username }} <span>...</span><button type="submit" class="talkButton">Talk</button></p>
+                    <p class="onlineUsers">{{ username }} <span>...</span>
+                    <button type="submit" class="talkButton" name="rec" value="{{username}}">Talk</button></p>
                     {% endfor %}
                 </form>
             </div>
