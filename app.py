@@ -1,10 +1,13 @@
 from flask import Flask, render_template, redirect, url_for, request, session
 import sqlite3, hashlib, os
 from datetime import timedelta
+from flask_socketio import join_room, leave_room, send, SocketIO
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = os.urandom(16)
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=120)
+socketio = SocketIO(app)
+
 
 conn = sqlite3.connect('profiles.db')
 cursor = conn.cursor()
@@ -84,8 +87,8 @@ def process_signup():
         session['username'] = username
         conn.close()
         return redirect(url_for('success'))
-        
-        
+
+
 @app.route(f'/find', methods=['GET'])
 def success():
     if 'logged_in' not in session:
@@ -99,7 +102,7 @@ def success():
     del usernames[usernames.index(user)]
     render_template('findSomeone.html', usernames=usernames, user=user)
     return render_template('findSomeone.html', usernames=usernames, user=user)
-    
+
 @app.route(f'/find/chat', methods=['GET'])
 def chat():
     if 'logged_in' not in session:
@@ -110,7 +113,20 @@ def chat():
     print(session['reciever'], 'session')
     print(rec)
     print('-'*40)
-    return render_template('chatting.html')
+    user = session.get('username')
+    return render_template('chatting.html', rec=rec, user=user)
+
+@socketio.on("request_step")
+def request_step(auth):
+    user = auth['user']
+    return 
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run()
+#    socketio.run(app, debug=True,allow_unsafe_werkzeug=True)
+   # app.close()
