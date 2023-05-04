@@ -25,7 +25,7 @@
         </nav>
         <main>
             <input type="text" placeholder="Type a message">
-            <button>Send</button>
+            <button onClick="sendMessage()" name="send">Send</button>
         </main>
     </section>
     <script>
@@ -33,7 +33,7 @@
 
     const messages = document.getElementById("messages")
     
-    const createMessage = (name, msg) =>{
+    const createMessage = (username, msg) =>{
         const content = `
         <div>
             <span>
@@ -45,7 +45,7 @@
         messages.innerHTML += content;
     }
     socketio.on("message", (data)=>{
-        createMessage(data.name, data.message)
+        createMessage(data.username, data.message)
     })
     const sendMessage = ()=>{
         const message = document.getElementById("message")
