@@ -1,13 +1,12 @@
 from flask import Flask, render_template, redirect, url_for, request, session
 import sqlite3, hashlib, os
 from datetime import timedelta
-from flask_socketio import join_room, leave_room, send, SocketIO
+from flask_socketio import join_room, leave_room, send, SocketIO, emit
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = os.urandom(16)
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=120)
 socketio = SocketIO(app)
-
 
 conn = sqlite3.connect('profiles.db')
 cursor = conn.cursor()
@@ -100,33 +99,35 @@ def success():
     usernames = [row[0] for row in cursor.fetchall()]
     conn.close()
     user = session.get('username')
-    del usernames[usernames.index(user)]
+    print('[USERNAMES TOTAL SUM]: ', usernames, len(usernames))
+    pointer = list(range(len(usernames)))
+    print(pointer)
+    usernames[usernames.index(user)] = user + '  (Me)'
     render_template('findSomeone.html', usernames=usernames, user=user)
-    return render_template('findSomeone.html', usernames=usernames, user=user)
+    return render_template('findSomeone.html', usernames=usernames, user=user )
 
-@app.route(f'/find/chat', methods=['GET'])
+@app.route(f'/find/chat', methods=['GET'] )
 def chat():
     if 'logged_in' not in session:
         return redirect(url_for('login'))
-    rec = request.args.get('rec')
+    info = request.args.get('rec')
+    info = info.split()
+    print(info[0], info[1])
+    chat_id = info[0]
+    rec = info[1]
+    print('[BUTTON ID]: ', chat_id)
+    print('[REQUEST]: ', rec)
     session['reciever'] = rec
     print('-'*40)
-    print(session['reciever'], 'session')
+    print(session['reciever'], 'session' )
     print(rec)
     print('-'*40)
     user = session.get('username')
     return render_template('chatting.html', rec=rec, user=user)
 
-@socketio.on("request_step")
-def request_step():
-    return 
-    print(f'{session.get("name")} said : {data["data"]}')
-
-
-
 
 
 if __name__ == '__main__':
-    app.run()
-#    socketio.run(app, debug=True,allow_unsafe_werkzeug=True)
+#    app.run()
+    socketio.run(app, debug=True,allow_unsafe_werkzeug=True)
    # app.close()
