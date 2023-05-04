@@ -25,8 +25,8 @@
                 <div>
                 <form method="get" action="{{url_for('chat')}}">
                     {% for username in usernames %}
-                    <p class="onlineUsers">{{ username }} <span>...</span>
-                    <button type="submit" class="talkButton" name="rec" value="{{username}}" onClick="createRequest()">Talk</button></p>
+                    <p class="onlineUsers">{{ loop.index }}) {{ username }} <span>...</span>
+                    <button type="submit" class="talkButton" id="45" name="rec" value="{{ loop.index }} {{username}}" >Talk</button></p>
                     {% endfor %}
                 </form>
             </div>
@@ -38,6 +38,7 @@
             <button class="viewProfile">View Profile</button>
         </section>
     </section>
+    <!--
     <script>
         let socketio = io()
 
@@ -61,6 +62,6 @@
             createRequest(auth.user)
     })
     </script>
+-->
 </body>
 </html>
- 
