@@ -7,7 +7,7 @@ app = Flask(__name__, static_folder='static')
 app.secret_key = os.urandom(16)
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=120)
 socketio = SocketIO(app)
-
+chats = {}
 conn = sqlite3.connect('profiles.db')
 cursor = conn.cursor()
 cursor.execute("""
@@ -81,7 +81,7 @@ def process_signup():
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
         cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
         conn.commit()
-        session['username'] = username
+        #maybe i don't need that actually
         conn.close()
         return redirect(url_for('success'))
 
@@ -91,7 +91,6 @@ def success():
     if 'logged_in' not in session:
         return redirect(url_for('login'))
     domain = session.get('domain')
-    print(domain)
     print('[SESSION]:', session['domain'])
     conn = sqlite3.connect('profiles.db')
     cursor = conn.cursor()
@@ -99,9 +98,6 @@ def success():
     usernames = [row[0] for row in cursor.fetchall()]
     conn.close()
     user = session.get('username')
-    print('[USERNAMES TOTAL SUM]: ', usernames, len(usernames))
-    pointer = list(range(len(usernames)))
-    print(pointer)
     usernames[usernames.index(user)] = user + '  (Me)'
     render_template('findSomeone.html', usernames=usernames, user=user)
     return render_template('findSomeone.html', usernames=usernames, user=user )
@@ -110,17 +106,18 @@ def success():
 def chat():
     if 'logged_in' not in session:
         return redirect(url_for('login'))
+    
+    user = session.get('username')
+    print('[USER]: ', user)
+    usernames = [row[0] for row in cursor.fetchall()]
+    print('[USER_ID]:',  usernames.index(user) + 1 )
+    
     info = request.args.get('rec')
     info = info.split()
-    print(info[0], info[1])
     chat_id = info[0]
     rec = info[1]
+    print(session['username'] )
     print('[BUTTON ID]: ', chat_id)
-    print('[REQUEST]: ', rec)
-    session['reciever'] = rec
-    print('-'*40)
-    print(session['reciever'], 'session' )
-    print(rec)
     print('-'*40)
     user = session.get('username')
     return render_template('chatting.html', rec=rec, user=user)
