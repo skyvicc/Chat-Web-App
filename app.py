@@ -7,7 +7,7 @@ app = Flask(__name__, static_folder='static')
 app.secret_key = os.urandom(16)
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=120)
 socketio = SocketIO(app)
-chats = {}
+chats = {}chat
 conn = sqlite3.connect('profiles.db')
 cursor = conn.cursor()
 cursor.execute("""
@@ -100,7 +100,9 @@ def success():
     user = session.get('username')
     usernames[usernames.index(user)] = user + '  (Me)'
     render_template('findSomeone.html', usernames=usernames, user=user)
-    session['chat'] = '2'
+    chat = ''
+    session['chat'] = chat
+    chats[chat] = {"members": 0,  "messages":[]}
     return render_template('findSomeone.html', usernames=usernames, user=user )
 '''
 @app.route(f'/find/chat', methods=['GET'] )
@@ -120,7 +122,6 @@ def chat():
     print(session['username'] )
     print('[BUTTON ID]: ', chat_id)
     print('-'*40)
-
     return render_template('chatting.html', rec=rec, user=user)
  '''   
 @app.route(f'/find/chat', methods=['GET'] )
