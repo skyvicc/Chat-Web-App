@@ -145,11 +145,13 @@ def chat():
     print('-'*40)
     if rec_id not in session.get('chat'):
         print(rec_id , 'NOT IN SESSION')
-        session['chat'] = usernames.index(user) + 1 #user's id
+        session['chat'] = str(usernames.index(user) + 1) #user's id
         print('[CURRENT SESION]: ', session['chat'])
+    elif rec_id in session.get('chat'):
+        print(rec_id, 'IN SESSION')
     conn.close()
+    
     return render_template('chatting.html', rec=rec, user=user)
-
 
 
 if __name__ == '__main__':
