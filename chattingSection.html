@@ -1,135 +1,63 @@
-from flask import Flask, render_template, redirect, url_for, request, session
-import sqlite3, hashlib, os
-from datetime import timedelta
-from flask_socketio import join_room, leave_room, send, SocketIO, emit
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        
+    <script 
+        src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" 
+        integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" 
+        crossorigin="anonymous">
+    </script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatting</title>
+    <!-- <link rel="stylesheet" href="styleGeneral.css"> -->
+    <!-- <link rel="stylesheet" href="chatSection.css"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styleGeneral.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='chatSection.css') }}">
+</head>
+<body>
+    <section class="genSec">
+        <nav>
+            <h4>Chatting with {{rec}}</h4>
+            <div class="messages" id="messages"></div>
+            <button class="newChatButton">End Chat</button>
+        </nav>
+        <main>
+            <input type="text" placeholder="Type a message">
+            <button>Send</button>
+        </main>
+    </section>
+    <script>
+    let socketio = io();
 
-app = Flask(__name__, static_folder='static')
-app.secret_key = os.urandom(16)
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=120)
-socketio = SocketIO(app)
-
-conn = sqlite3.connect('profiles.db')
-cursor = conn.cursor()
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        username TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL
-    )
-""")
-conn.commit()
-conn.close()
-
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-@app.route('/login')
-def login():
-    return render_template('logIn.html')
-@app.route('/signup')
-def signup():
-    return render_template('signUp.html')
-#========================================================================
-@app.route('/login_step', methods=['POST'])
-def process_login():
-    # get the login form data
-    username = request.form['username']
-    password = request.form['pass']
-    stay_logged = request.form.get('stayLogged')
-    conn = sqlite3.connect('profiles.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT password FROM users WHERE username = ?", (username,))
-    result = cursor.fetchone()
-    if result is None:
-        conn.close()
-        error = 'Invalid username or password'
-        return render_template('logIn.html', error = error)
-    else:
-        hashed_password = result[0]
-        hashed_input_password = hashlib.sha256(password.encode()).hexdigest()
-
-        if hashed_input_password != hashed_password:
-            conn.close()
-            error = 'Invalid username or password'
-            return render_template('logIn.html', error = error)
-        else:
-            session['username'] = username
-            session['domain'] = 'loby'
-            conn.close()
-            session['logged_in'] = True
-            session.modified =True
-            return redirect(url_for('success'))
-#------------------------------------------------------------------
-@app.route('/register', methods=['POST'])
-def process_signup():
-    # code to process signup form data here
-    username = request.form['username']
-    password = request.form['password']
-    password_confirm = request.form['password_confirm']
-    stay_logged = request.form.get('stayLogged')
-    conn = sqlite3.connect('profiles.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
-    if cursor.fetchone() is not None:
-        conn.close()
-        error = 'Username already exists'
-        return render_template('signUp.html', error = error)
-    elif password != password_confirm:
-        error = 'The passwords don\'t match'
-        return render_template('signUp.html', error = error)
-    else:
-        hashed_password = hashlib.sha256(password.encode()).hexdigest()
-        cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
-        conn.commit()
-        session['username'] = username
-        conn.close()
-        return redirect(url_for('success'))
-
-
-@app.route(f'/find', methods=['GET'])
-def success():
-    if 'logged_in' not in session:
-        return redirect(url_for('login'))
-    domain = session.get('domain')
-    print(domain)
-    print('[SESSION]:', session['domain'])
-    conn = sqlite3.connect('profiles.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT username FROM users')
-    usernames = [row[0] for row in cursor.fetchall()]
-    conn.close()
-    user = session.get('username')
-    print('[USERNAMES TOTAL SUM]: ', usernames, len(usernames))
-    pointer = list(range(len(usernames)))
-    print(pointer)
-    print('[USER]: ', user)
-    print('[USER_ID]:',  usernames.index(user) + 1 )
-    usernames[usernames.index(user)] = user + '  (Me)'
-    render_template('findSomeone.html', usernames=usernames, user=user)
-    return render_template('findSomeone.html', usernames=usernames, user=user )
-
-@app.route(f'/find/chat', methods=['GET'] )
-def chat():
-    if 'logged_in' not in session:
-        return redirect(url_for('login'))
-    info = request.args.get('rec')
-    info = info.split()
-    chat_id = info[0]
-    rec = info[1]
-    print(session['username'] )
-    print('[BUTTON ID]: ', chat_id)
-    session['reciever'] = rec
-    print(session['reciever'])
-    print('-'*40)
-    print(session['reciever'], 'session' )
-    print(rec)
-    print('-'*40)
-    user = session.get('username')
-    return render_template('chatting.html', rec=rec, user=user)
-
-
-
-if __name__ == '__main__':
-#    app.run()
-    socketio.run(app, debug=True,allow_unsafe_werkzeug=True)
-   # app.close()
+    const messages = document.getElementById("messages")
+    
+    const createMessage = (name, msg) =>{
+        const content = `
+        <div>
+            <span>
+                <strong>${name}</strong>: ${msg}
+            </span>
+            <span class="muted">${new Date().toLocaleString()}</span>
+        </div>
+        `
+        messages.innerHTML += content;
+    }
+    socketio.on("message", (data)=>{
+        createMessage(data.name, data.message)
+    })
+    const sendMessage = ()=>{
+        const message = document.getElementById("message")
+        if(message.value == "") return;
+        socketio.emit("message",{data: message.value} )
+        message.value = "" 
+    };
+</script>
+{% for msg in messages %}
+<script>
+    createMessage("{{msg.name}}", "{{msg.message}}")
+</script>
+{% endfor %}
+</body>
+</html>
