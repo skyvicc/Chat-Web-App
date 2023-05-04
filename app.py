@@ -100,18 +100,19 @@ def success():
     user = session.get('username')
     usernames[usernames.index(user)] = user + '  (Me)'
     render_template('findSomeone.html', usernames=usernames, user=user)
+    session['chat'] = '2'
     return render_template('findSomeone.html', usernames=usernames, user=user )
-
+'''
 @app.route(f'/find/chat', methods=['GET'] )
 def chat():
     if 'logged_in' not in session:
         return redirect(url_for('login'))
-    
+    print('-'*40)
     user = session.get('username')
-    print('[USER]: ', user)
+    print('[USER]:  ', user)
     usernames = [row[0] for row in cursor.fetchall()]
     print('[USER_ID]:',  usernames.index(user) + 1 )
-    
+
     info = request.args.get('rec')
     info = info.split()
     chat_id = info[0]
@@ -119,7 +120,34 @@ def chat():
     print(session['username'] )
     print('[BUTTON ID]: ', chat_id)
     print('-'*40)
+
+    return render_template('chatting.html', rec=rec, user=user)
+ '''   
+@app.route(f'/find/chat', methods=['GET'] )
+def chat():
+    if 'logged_in' not in session:
+        return redirect(url_for('login'))
+    print('-'*40)
     user = session.get('username')
+    print('[USER]:  ', user)
+    conn = sqlite3.connect('profiles.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT username FROM users')
+    usernames = [row[0] for row in cursor.fetchall()]
+    print('[USER_ID]:',  usernames.index(user) + 1 )
+    
+    info = request.args.get('rec')
+    info = info.split()
+    rec_id = info[0]
+    rec = info[1]
+    print('[RECIVER]:', rec)
+    print('[RECIVER ID]: ', rec_id)
+    print('-'*40)
+    if rec_id not in session.get('chat'):
+        print(rec_id , 'NOT IN SESSION')
+        session['chat'] = usernames.index(user) + 1 #user's id
+        print('[CURRENT SESION]: ', session['chat'])
+    conn.close()
     return render_template('chatting.html', rec=rec, user=user)
 
 
