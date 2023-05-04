@@ -38,30 +38,6 @@
             <button class="viewProfile">View Profile</button>
         </section>
     </section>
-    <!--
-    <script>
-        let socketio = io()
 
-        const request = document.querySelector('.request')
-        const suer = document.querySelector('.user')
-
-        const suerValue = suer.dataset.value
-
-        const createRequest = function(){
-            const content = `
-            <div>
-                <p>${suerValue}</p>
-                <button>Yes</button>
-                <button>No</button>
-            </div>
-            `
-            request.innerHTML += content;
-            alert(suerValue)
-        }
-        socketio.on("request_step", (data)=>{
-            createRequest(auth.user)
-    })
-    </script>
--->
 </body>
 </html>
