@@ -138,7 +138,7 @@ def chat():
         session['chat'] = chat
         chats[chat] = {"members": 0,  "messages":[]}
         print(chats)
-        print(session.get('chat'))
+        print(session.get('chat') )
         print('[CURRENT SESION]: ', session.get('chat'))
     elif rec_id in chats:
         session['chat'] = rec_id
@@ -146,7 +146,7 @@ def chat():
     conn.close()
     return render_template('chatting.html', rec=rec, user=user)
 @socketio.on("message")
-def message(data):
+def message(data): 
     chat = session.get('chat')
     if chat not in chats: return
     
@@ -182,5 +182,5 @@ def disconnect():
 
 if __name__ == '__main__':
 #    app.run()
-    socketio.run(app, debug=True,allow_unsafe_werkzeug=True)
+    socketio.run(app, debug=True,allow_unsafe_werkzeug= True, host='192.168.1.3', port=4000)
    # app.close()
