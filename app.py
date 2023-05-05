@@ -164,7 +164,7 @@ def connect(auth):
         leave_room(chat)
         return
     join_room(chat)
-    send({'usernmae': username, 'message': 'has entered the chat'}, to=chat)
+    send({'username': username, 'message': 'has entered the chat'}, to=chat)
     chats[chat]['members'] += 1
     print(f"{username} joined chat {chat}")
     
