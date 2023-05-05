@@ -86,8 +86,10 @@ def process_signup():
         #maybe i don't need that actually
         conn.close()
         return redirect(url_for('success'))
+        
 @app.route(f'/find', methods=['GET'])
 def success():
+    #session
     if 'logged_in' not in session:
         return redirect(url_for('login'))
     conn = sqlite3.connect('profiles.db')
@@ -96,8 +98,12 @@ def success():
     usernames = [row[0] for row in cursor.fetchall()]
     conn.close()
     user = session.get('username')
+
+   # print('[USER_ID]:',  usernames.index(user) + 1 )
     usernames[usernames.index(user)] = user + '  (Me)'
-    render_template('findSomeone.html', usernames=usernames, user=user)
+
+    info = request.args.get('rec')
+    print('*'*60)
     return render_template('findSomeone.html', usernames=usernames, user=user )
 
 @app.route(f'/find/chat', methods=['GET'] )
@@ -111,7 +117,8 @@ def chat():
     cursor = conn.cursor()
     cursor.execute('SELECT username FROM users')
     usernames = [row[0] for row in cursor.fetchall()]
-    print('[USER_ID]:',  usernames.index(user) + 1 )
+    user_id = str(usernames.index(user) + 1)
+    print('[USER_ID]:', user_id )
     '''
     chat = ''
     session['chat'] = chat
@@ -124,56 +131,18 @@ def chat():
     print('[RECIVER]:', rec)
     print('[RECIVER ID]: ', rec_id)
     print('-'*40)
-    session['chat'] = ''
-    
-    if rec_id not in session.get('chat'):
+    chat = ''
+    if rec_id not in chats:
         print(rec_id , 'NOT IN SESSION')
-        session['chat'] = str(usernames.index(user) + 1) #user's id
+        chat = user_id
+        session['chat'] = chat
+        chats[chat] = {"members": 0,  "messages":[]}
         print('[CURRENT SESION]: ', session.get('chat'))
-    elif rec_id in session.get('chat'):
-        print(rec_id, 'IN SESSION')
+    elif user_id in chats:
+        print('[CURRENT SESION]: ', session.get('chat'))
     conn.close()
-
     return render_template('chatting.html', rec=rec, user=user)
-
-@socketio.on("message")
-def message(data):
-    chat = session.get("chat ")
-    if chat not in chats:
-        return
-    content = {"name" : session.get("username"),
-    "message" : data["data"]}
-    send(content, to=room)
-    chats[chat]["messages"].append(content)
-    print(f'{session.get("username")} said : {data["data"]}')
-
-@socketio.on("connect")
-def connect(auth):
-    chat = session.get("chat")
-    username = session.get("username")
-    if not chat or not username:
-        return
-    if chat not in chats:
-        leave_room(chat)
-        return
-    join_room(chat)
-    send({"name": username, "message": "has enetered the room"}, to=chat)
-    chats[chat]["members"] += 1
-    print(f'{username} joined the room  {chat}')
-
-@socketio.on("disconnect")
-def disconnect():
-    chat = session.get("chat")
-    username = session.get("username")
-    leave_room(chat)
-
-    if chat in chats:
-        chats[chat]["members"] -= 1
-        if chats[chat]["members"] <= 0:
-            del chats[chat]
-    send({"name": username, "message": "has left the room"}, to=chat )
-    print(f'{username} left the room {chat}')
-
+    
 if __name__ == '__main__':
 #    app.run()
     socketio.run(app, debug=True,allow_unsafe_werkzeug=True)
