@@ -137,8 +137,11 @@ def chat():
         chat = user_id
         session['chat'] = chat
         chats[chat] = {"members": 0,  "messages":[]}
+        print(chats)
+        print(session.get('chat'))
         print('[CURRENT SESION]: ', session.get('chat'))
-    elif user_id in chats:
+    elif rec_id in chats:
+        session['chat'] = rec_id
         print('[CURRENT SESION]: ', session.get('chat'))
     conn.close()
     return render_template('chatting.html', rec=rec, user=user)
