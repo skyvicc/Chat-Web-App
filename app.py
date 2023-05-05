@@ -7,7 +7,9 @@ app = Flask(__name__, static_folder='static')
 app.secret_key = os.urandom(16)
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=120)
 socketio = SocketIO(app)
-chats = {}chat
+
+chats = {}
+
 conn = sqlite3.connect('profiles.db')
 cursor = conn.cursor()
 cursor.execute("""
@@ -32,6 +34,7 @@ def signup():
 #========================================================================
 @app.route('/login_step', methods=['POST'])
 def process_login():
+    session.clear()
     # get the login form data
     username = request.form['username']
     password = request.form['pass']
@@ -53,11 +56,10 @@ def process_login():
             error = 'Invalid username or password'
             return render_template('logIn.html', error = error)
         else:
-            session['username'] = username
-            session['domain'] = 'loby'
             conn.close()
+            session['username'] = username
             session['logged_in'] = True
-            session.modified =True
+            #session.modified =True
             return redirect(url_for('success'))
 #------------------------------------------------------------------
 @app.route('/register', methods=['POST'])
@@ -84,14 +86,10 @@ def process_signup():
         #maybe i don't need that actually
         conn.close()
         return redirect(url_for('success'))
-
-
 @app.route(f'/find', methods=['GET'])
 def success():
     if 'logged_in' not in session:
         return redirect(url_for('login'))
-    domain = session.get('domain')
-    print('[SESSION]:', session['domain'])
     conn = sqlite3.connect('profiles.db')
     cursor = conn.cursor()
     cursor.execute('SELECT username FROM users')
@@ -100,30 +98,8 @@ def success():
     user = session.get('username')
     usernames[usernames.index(user)] = user + '  (Me)'
     render_template('findSomeone.html', usernames=usernames, user=user)
-    chat = ''
-    session['chat'] = chat
-    chats[chat] = {"members": 0,  "messages":[]}
     return render_template('findSomeone.html', usernames=usernames, user=user )
-'''
-@app.route(f'/find/chat', methods=['GET'] )
-def chat():
-    if 'logged_in' not in session:
-        return redirect(url_for('login'))
-    print('-'*40)
-    user = session.get('username')
-    print('[USER]:  ', user)
-    usernames = [row[0] for row in cursor.fetchall()]
-    print('[USER_ID]:',  usernames.index(user) + 1 )
 
-    info = request.args.get('rec')
-    info = info.split()
-    chat_id = info[0]
-    rec = info[1]
-    print(session['username'] )
-    print('[BUTTON ID]: ', chat_id)
-    print('-'*40)
-    return render_template('chatting.html', rec=rec, user=user)
- '''   
 @app.route(f'/find/chat', methods=['GET'] )
 def chat():
     if 'logged_in' not in session:
@@ -136,7 +112,11 @@ def chat():
     cursor.execute('SELECT username FROM users')
     usernames = [row[0] for row in cursor.fetchall()]
     print('[USER_ID]:',  usernames.index(user) + 1 )
-    
+    '''
+    chat = ''
+    session['chat'] = chat
+    chats[chat] = {"members": 0,  "messages":[]}
+    '''
     info = request.args.get('rec')
     info = info.split()
     rec_id = info[0]
@@ -144,16 +124,55 @@ def chat():
     print('[RECIVER]:', rec)
     print('[RECIVER ID]: ', rec_id)
     print('-'*40)
+    session['chat'] = ''
+    
     if rec_id not in session.get('chat'):
         print(rec_id , 'NOT IN SESSION')
         session['chat'] = str(usernames.index(user) + 1) #user's id
-        print('[CURRENT SESION]: ', session['chat'])
+        print('[CURRENT SESION]: ', session.get('chat'))
     elif rec_id in session.get('chat'):
         print(rec_id, 'IN SESSION')
     conn.close()
-    
+
     return render_template('chatting.html', rec=rec, user=user)
 
+@socketio.on("message")
+def message(data):
+    chat = session.get("chat ")
+    if chat not in chats:
+        return
+    content = {"name" : session.get("username"),
+    "message" : data["data"]}
+    send(content, to=room)
+    chats[chat]["messages"].append(content)
+    print(f'{session.get("username")} said : {data["data"]}')
+
+@socketio.on("connect")
+def connect(auth):
+    chat = session.get("chat")
+    username = session.get("username")
+    if not chat or not username:
+        return
+    if chat not in chats:
+        leave_room(chat)
+        return
+    join_room(chat)
+    send({"name": username, "message": "has enetered the room"}, to=chat)
+    chats[chat]["members"] += 1
+    print(f'{username} joined the room  {chat}')
+
+@socketio.on("disconnect")
+def disconnect():
+    chat = session.get("chat")
+    username = session.get("username")
+    leave_room(chat)
+
+    if chat in chats:
+        chats[chat]["members"] -= 1
+        if chats[chat]["members"] <= 0:
+            del chats[chat]
+    send({"name": username, "message": "has left the room"}, to=chat )
+    print(f'{username} left the room {chat}')
 
 if __name__ == '__main__':
 #    app.run()
