@@ -148,7 +148,7 @@ def chat():
 @socketio.on("message")
 def message(data):
     chat = session.get('chat')
-    if chat on in chats: return
+    if chat not in chats: return
     
     content = {'username': session.get('username'), "message": data['data']}
     send(content, to=chat)
@@ -159,7 +159,7 @@ def message(data):
 def connect(auth):
     chat = session.get('chat')
     username = session.get('username')
-    if not chat or if not username: return
+    if not chat or not username: return
     if chat not in chats:
         leave_room(chat)
         return
