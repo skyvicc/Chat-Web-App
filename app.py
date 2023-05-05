@@ -145,7 +145,41 @@ def chat():
         print('[CURRENT SESION]: ', session.get('chat'))
     conn.close()
     return render_template('chatting.html', rec=rec, user=user)
+@socketio.on("message")
+def message(data):
+    chat = session.get('chat')
+    if chat on in chats: return
     
+    content = {'username': session.get('username'), "message": data['data']}
+    send(content, to=chat)
+    chats[chat]['messages'].append(content)
+    print(f"{session.get('username')} said: {data['data']}")
+
+@socketio.on('connect')
+def connect(auth):
+    chat = session.get('chat')
+    username = session.get('username')
+    if not chat or if not username: return
+    if chat not in chats:
+        leave_room(chat)
+        return
+    join_room(chat)
+    send({'usernmae': username, 'message': 'has entered the chat'}, to=chat)
+    chats[chat]['members'] += 1
+    print(f"{username} joined chat {chat}")
+    
+@socketio.on('disconnect')
+def disconnect():
+    chat = session.get('chat')
+    username = session.get('username')
+    leave_room(chat)
+    if chat not in chats:
+        chats[chat]['members'] -= 1
+        if chats[chat]['members'] <= 0:
+            del chats[chat]
+    send({'username': username, 'message':"has left the chat"}, to=chat)
+    print(f"{username} has left the room {chat}")
+
 if __name__ == '__main__':
 #    app.run()
     socketio.run(app, debug=True,allow_unsafe_werkzeug=True)
